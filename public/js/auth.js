@@ -67,27 +67,27 @@ window.login = async function () {
   let email = input;
 
   // jika login pakai username
-  if (!identifier.includes("@")) {
-    const { data: userRow, error } = await supabase
+  if (!input.includes("@")) {
+    const { data, error } = await supabase
       .from("users")
       .select("email")
-      .eq("username", identifier)
+      .eq("username", input)
       .single();
 
-    if (error || !userRow) {
+    if (error || !data) {
       alert("Username tidak ditemukan");
       return;
     }
 
-    email = userRow.email;
+    email = data.email;
   }
 
-  const { error: loginError } = await supabase.auth.signInWithPassword({
-    email: email,
+  const { error } = await supabase.auth.signInWithPassword({
+    email,
     password: pin,
   });
 
-  if (loginError) {
+  if (error) {
     alert(error.message);
     return;
   }
