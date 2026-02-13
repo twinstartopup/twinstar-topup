@@ -45,7 +45,7 @@ window.register = async function () {
       email,
       username,
       pin,
-      role: "user",
+      role: "member",
     });
 
   if (insertError) {
