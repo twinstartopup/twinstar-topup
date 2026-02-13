@@ -1,24 +1,109 @@
 <!DOCTYPE html>
-<html>
-  <body>
-    <h2>Dashboard</h2>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard</title>
 
-<img id="avatar" width="100"><br>
+<!-- Supabase JS -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-Username:
-<input id="username">
-<button onclick="updateUsername()">Simpan</button>
-<br><br>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f6fb;
+  padding: 20px;
+}
 
-Upload avatar:
-<input type="file" id="avatarFile">
-<button onclick="uploadAvatar()">Upload</button>
+.card {
+  max-width: 500px;
+  margin: auto;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
 
-<p>Email: <span id="email"></span></p>
-<p>Role: <span id="role"></span></p>
-<p>Saldo: <span id="balance"></span></p>
-<p>Akun dibuat: <span id="created"></span></p>
+h2 {
+  margin-top: 0;
+}
 
-<script type="module" src="js/dashboard.js"></script>
-  </body>
+button {
+  padding: 10px 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.logout {
+  background: crimson;
+  color: white;
+}
+
+.info {
+  margin: 10px 0;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+  <h2>Dashboard</h2>
+
+  <div class="info">Username: <b id="username">-</b></div>
+  <div class="info">User ID: <b id="userid">-</b></div>
+  <div class="info">Email System: <b id="email">-</b></div>
+  <div class="info">Daftar sejak: <b id="created">-</b></div>
+
+  <br>
+  <button class="logout" onclick="logout()">Logout</button>
+</div>
+
+<script>
+/* ===========================
+   CONFIG SUPABASE
+=========================== */
+const SUPABASE_URL = "https://YOURPROJECT.supabase.co";
+const SUPABASE_ANON_KEY = "YOUR_ANON_KEY";
+
+const supabaseClient = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
+
+/* ===========================
+   LOAD USER
+=========================== */
+async function loadUser() {
+  const { data: { user } } = await supabaseClient.auth.getUser();
+
+  // kalau belum login
+  if (!user) {
+    window.location.href = "/login.html";
+    return;
+  }
+
+  // ambil username dari email dummy
+  const username = user.email.split("@")[0];
+
+  document.getElementById("username").textContent = username;
+  document.getElementById("userid").textContent = user.id;
+  document.getElementById("email").textContent = user.email;
+  document.getElementById("created").textContent =
+    new Date(user.created_at).toLocaleString();
+}
+
+loadUser();
+
+/* ===========================
+   LOGOUT
+=========================== */
+async function logout() {
+  await supabaseClient.auth.signOut();
+  window.location.href = "/login.html";
+}
+</script>
+
+</body>
 </html>
