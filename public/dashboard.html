@@ -76,15 +76,16 @@ const supabaseClient = supabase.createClient(
    LOAD USER
 =========================== */
 async function loadUser() {
-  const { data: { user } } = await supabaseClient.auth.getUser();
+  const { data: { session } } =
+    await supabaseClient.auth.getSession();
 
-  // kalau belum login
-  if (!user) {
+  if (!session) {
     window.location.href = "/login.html";
     return;
   }
 
-  // ambil username dari email dummy
+  const user = session.user;
+
   const username = user.email.split("@")[0];
 
   document.getElementById("username").textContent = username;
