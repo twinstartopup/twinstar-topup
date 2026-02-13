@@ -2,9 +2,12 @@ import "./supabase.js";
 
 const usernameRegex = /^[a-z0-9._]+$/;
 
+/* =========================
+   REGISTER
+========================= */
 window.register = async function () {
-  const username = username.value;
-  const email = email.value;
+  const username = document.getElementById("username").value.trim();
+  const email = document.getElementById("email").value.trim();
   const pin = document.getElementById("pin").value;
   const pin2 = document.getElementById("pin2").value;
 
@@ -18,48 +21,76 @@ window.register = async function () {
     return;
   }
 
+  // daftar auth
   const { data, error } = await supabase.auth.signUp({
     email,
-    password: pin
+    password: pin,
   });
 
-  if (error) return alert(error.message);
+  if (error) {
+    alert(error.message);
+    return;
+  }
 
-  await supabase.from("users").insert({
-    id: data.user.id,
-    email,
-    username,
-    pin,
-    role: "user"
-  });
+  if (!data.user) {
+    alert("Gagal membuat user");
+    return;
+  }
 
-  alert("Register berhasil");
+  // simpan ke table users
+  const { error: insertError } = await supabase
+    .from("users")
+    .insert({
+      id: data.user.id,
+      email,
+      username,
+      pin,
+      role: "user",
+    });
+
+  if (insertError) {
+    alert(insertError.message);
+    return;
+  }
+
+  alert("Register berhasil! Silakan login.");
+  location.href = "/login.html";
 };
 
+/* =========================
+   LOGIN
+========================= */
 window.login = async function () {
-  const input = document.getElementById("loginInput").value;
+  const input = document.getElementById("loginInput").value.trim();
   const pin = document.getElementById("pin").value;
 
   let email = input;
 
-  // jika login pakai username, cari emailnya dulu
+  // jika login pakai username
   if (!input.includes("@")) {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("users")
       .select("email")
       .eq("username", input)
       .single();
 
-    if (!data) return alert("Username tidak ditemukan");
+    if (error || !data) {
+      alert("Username tidak ditemukan");
+      return;
+    }
 
     email = data.email;
   }
 
   const { error } = await supabase.auth.signInWithPassword({
     email,
-    password: pin
+    password: pin,
   });
 
-  if (error) alert(error.message);
-  else location.href = "/dashboard.html";
+  if (error) {
+    alert(error.message);
+    return;
+  }
+
+  location.href = "/dashboard.html";
 };
