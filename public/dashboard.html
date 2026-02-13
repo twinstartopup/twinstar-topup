@@ -1,4 +1,24 @@
 <!DOCTYPE html>
 <html>
-  
+  <body>
+    <h2>Dashboard</h2>
+
+<img id="avatar" width="100"><br>
+
+Username:
+<input id="username">
+<button onclick="updateUsername()">Simpan</button>
+<br><br>
+
+Upload avatar:
+<input type="file" id="avatarFile">
+<button onclick="uploadAvatar()">Upload</button>
+
+<p>Email: <span id="email"></span></p>
+<p>Role: <span id="role"></span></p>
+<p>Saldo: <span id="balance"></span></p>
+<p>Akun dibuat: <span id="created"></span></p>
+
+<script type="module" src="js/dashboard.js"></script>
+  </body>
 </html>
